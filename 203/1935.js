@@ -28,6 +28,43 @@ AA+A+
 3.00
  */
 
-let data = ''.split('\n')
+let data = `1
+AA+A+
+1`.split('\n')
 
-let 
+const totalCount = +data.shift()
+const postFixTotal = data.shift()
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+const calculationText = '+-*/'
+const alphabetLinkedNumberObj = {}
+
+for(let i = 0; i < totalCount; i++) {
+    alphabetLinkedNumberObj[alphabet[i]] = data[i]
+}
+
+let stack = []
+
+for(let i = 0; i < postFixTotal.length; i++) {
+    if(calculationText.indexOf(postFixTotal[i]) > -1) {
+        let B = stack.pop()
+        let A = stack.pop()
+        switch(postFixTotal[i]) {
+            case '+':
+                stack.push(A + B)
+                break
+            case '-':
+                stack.push(A - B)
+                break
+            case '*':
+                stack.push(A * B)
+                break
+            case '/':
+                stack.push(A / B)
+                break
+        }
+    } else {
+        stack.push(+alphabetLinkedNumberObj[postFixTotal[i]])
+    }
+}
+
+console.log(stack[0].toFixed(2))
