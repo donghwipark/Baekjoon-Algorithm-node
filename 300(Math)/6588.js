@@ -34,13 +34,32 @@
 */
 
 let data = `8
-12
+20
 42
 0`.split('\n').map(Number)
 
 const primeNumber = [3, 5, 7, 11]
 let result = ''
 data.pop()
+
+let max = 0
+data.map(el => max = el > max ? el : max)
+
+const isPrime = (n) => {
+    for (let i = 2; i <= Math.sqrt(n); i++) {
+        if (n % i === 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+for(let i = 12; i <= max; i++) {
+    let confirmPrime = isPrime(i) 
+    if(confirmPrime) {
+        primeNumber.push(i)
+    }
+}
 
 for(let number of data) {
     let indexA = 0
@@ -60,11 +79,3 @@ for(let number of data) {
     }
 }
 console.log(result.trim())
-
-
-
-
-
-
-
-
