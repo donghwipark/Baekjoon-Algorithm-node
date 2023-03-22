@@ -32,7 +32,7 @@ YES
 NO
  */
 
-let data = `2
+let input = `2
 3 2
 1 3
 2 3
@@ -42,46 +42,69 @@ let data = `2
 3 4
 4 2`.split('\n')
 
-const numberOfTree = data.shift()
+// const input = require('fs').readFileSync('/dev/stdin').toString().trim().split('\n');
+const K = +input.shift();
+const SET_A = -1;
+const SET_B = 1;
 
-const makeTree = (tree) => {
-    const obj = {}
-    const treeRelationsNumber = +tree.shift().split(' ')[1]
-    for(let i = 0; i < treeRelationsNumber ;i++) {
-        const left = tree[i].split(' ')[0]
-        const right = tree[i].split(' ')[1]
-        obj[left] ? obj[left].push(right) : obj[left] = [right]
-        obj[right] ? obj[right].push(left) : obj[right] = [left]
+const dfs = (start, graph, visited) => {
+  visited[start] = SET_A;
+  const stack = [start];
+  while (stack.length) {
+    const node = stack.pop();
+    const curSet = visited[node];
+    const nextSet = curSet === SET_A ? SET_B : SET_A;
+    console.log(visited, curSet)
+    if (!graph[node]) {
+      continue;
     }
-
-    return obj
-}
-
-let visitedNode = {}
-let path = []
-
-const DFS = (Graph) => {
-    const node = Object.keys(Graph)[0]
-    let unvisitedNode = []
-    visitedNode[node] = 1
-    path.push(+node)
-    unvisitedNode.push(Graph[node])
-    console.log(unvisitedNode)
-    while(unvisitedNode.length > 0) {
-        if(visitedNode[node] === 1 ) {
-            return
-        } else {
-            DFS(unvisitedNode.shift())
-        }
+    for (let i = 0; i < graph[node].length; i++) {
+      const adjNode = graph[node][i];
+      if (visited[adjNode] === curSet) {
+        return false;
+      }
+      if (!visited[adjNode]) {
+        visited[adjNode] = nextSet;
+        stack.push(adjNode);
+      }
     }
+  }
+  return true;
+};
 
-    visitedNode = {}
-    path = []
+const output = Array(K).fill('YES');
+//console.log(output)
 
-}
-
-for (let i = 0; i < numberOfTree; i++) {
-    const relations = data.splice(0, +data[0].split(' ')[1] + 1)
-    DFS(makeTree(relations))
+for (let i = 0; i < K; i++) {
+  const [V, E] = input.shift().split(' ').map(Number);
+//   console.log(V, E, 'V and E')
+  const edges = input.splice(0, E).map(v => v.split(' ').map(Number));
+ // console.log(edges, 'V and E')
+  const graph = edges.reduce((acc, v) => {
+    const from = v[0];
+    const to = v[1];
+    if (acc[from]) {
+      acc[from].push(to);
+    } else {
+      acc[from] = [to];
+    }
+    if (acc[to]) {
+      acc[to].push(from);
+    } else {
+      acc[to] = [from];
+    }
+    return acc;
+  }, {});
+  // console.log(graph, 'graph')
+  const visited = Array(V + 1).fill(0);
+  for (let j = 1; j <= V; j++) {
+    if (visited[j]) {
+      continue;
+    }
+    if (!dfs(j, graph, visited)) {
+      output[i] = 'NO';
+    break;
+    }
+  }
 }
 
