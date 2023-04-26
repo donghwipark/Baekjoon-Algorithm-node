@@ -42,7 +42,7 @@ let input = `2
 3 4
 4 2`.split('\n')
 
-// const input = require('fs').readFileSync('/dev/stdin').toString().trim().split('\n');
+const input = require('fs').readFileSync('/dev/stdin').toString().trim().split('\n');
 const K = +input.shift();
 const SET_A = -1;
 const SET_B = 1;
@@ -54,7 +54,6 @@ const dfs = (start, graph, visited) => {
     const node = stack.pop();
     const curSet = visited[node];
     const nextSet = curSet === SET_A ? SET_B : SET_A;
-    console.log(visited, curSet)
     if (!graph[node]) {
       continue;
     }
@@ -73,13 +72,11 @@ const dfs = (start, graph, visited) => {
 };
 
 const output = Array(K).fill('YES');
-//console.log(output)
+
 
 for (let i = 0; i < K; i++) {
   const [V, E] = input.shift().split(' ').map(Number);
-//   console.log(V, E, 'V and E')
   const edges = input.splice(0, E).map(v => v.split(' ').map(Number));
- // console.log(edges, 'V and E')
   const graph = edges.reduce((acc, v) => {
     const from = v[0];
     const to = v[1];
@@ -95,7 +92,7 @@ for (let i = 0; i < K; i++) {
     }
     return acc;
   }, {});
-  // console.log(graph, 'graph')
+  
   const visited = Array(V + 1).fill(0);
   for (let j = 1; j <= V; j++) {
     if (visited[j]) {
@@ -107,4 +104,3 @@ for (let i = 0; i < K; i++) {
     }
   }
 }
-
