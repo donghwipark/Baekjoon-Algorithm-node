@@ -62,26 +62,26 @@
 // 0 0 0 0 0 0 0 0
 // 0 0`.split('\n')
 
-let input = `4 6
-110110
-110110
-111111
-111101`.split('\n')
+let input = `5 5
+-1 1 0 0 0
+0 -1 -1 -1 0
+0 -1 -1 -1 0
+0 -1 -1 -1 0
+0 0 0 0 0`.split('\n')
 
 
 // const input = require('fs').readFileSync('/dev/stdin').toString().trim().split('\n');
-const [Y, X]= input.shift().split(' ').map(Number);
-const arr = input.splice(0, Y).map(el => el.split('').map(Number));
-const check = Array.from({length: Y}, () => Array(X).fill(0));
+const [X, Y]= input.shift().split(' ').map(Number);
+const arr = input.splice(0, Y).map(el => el.split(' ').map(Number));
 
 const bfs = (x, y) => {
   const queue = [{qx: x, qy: y}];
-  check[y][x] = 1;
+  arr[y][x] = 1;
   const dx = [-1, 0, 1, 0];
   const dy = [0, 1, 0, -1];
-  
-  while (queue.length) {
-    let { qx, qy } = queue.shift();
+  let idx = 0
+  while (queue.length != idx) {
+    let { qx, qy } = queue[idx];
     for(let j = 0; j < 4; j++) {
       let nx = qx + dx[j];
       let ny = qy + dy[j];
@@ -91,15 +91,38 @@ const bfs = (x, y) => {
         nx < X &&
         ny < Y 
       ) {
-        if(arr[ny][nx] === 1 && !check[ny][nx]) {
-          check[ny][nx] = check[qy][qx] + 1
+        if(arr[ny][nx] === 0) {
+          arr[ny][nx] = arr[qy][qx] + 1;
+          queue.push({qx: nx, qy: ny});
+        } else if(arr[ny][nx] !== 0 && (arr[ny][nx] > arr[qy][qx] + 1)) {
+          arr[ny][nx] = arr[qy][qx] + 1;
           queue.push({qx: nx, qy: ny});
         }
       }
     }
+    idx++
   }
 };
 
-bfs(0, 0)
+for(let i = 0; i < Y; i++) {
+  for(let j = 0; j < X; j++) {
+    if(arr[i][j] === 1) {
+      bfs(j, i);
+    }
+  }
+}
 
-console.log(check[Y - 1][X - 1]);
+let max = -1
+for(let i of arr) {
+  for(let j of i) {
+    if(j === 0) {
+      max = -1;
+      break;
+    }
+    if(max < j) {
+      max = j;
+    }
+  }
+}
+
+console.log(max - 1)

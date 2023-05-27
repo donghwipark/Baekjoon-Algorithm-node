@@ -25,81 +25,52 @@
 9
  */
 
-// let input = `1 1
-// 0
-// 2 2
-// 0 1
-// 1 0
-// 3 2
-// 1 1 1
-// 1 1 1
-// 5 4
-// 1 0 1 0 0
-// 1 0 0 0 0
-// 1 0 1 0 1
-// 1 0 0 1 0
-// 5 4
-// 1 1 1 0 1
-// 1 0 1 0 1
-// 1 0 1 0 1
-// 1 0 1 1 1
-// 5 5
-// 1 0 1 0 1
-// 0 0 0 0 0
-// 1 0 1 0 1
-// 0 0 0 0 0
-// 1 0 1 0 1
-// 0 0`.split('\n')
 
-// let input = `8 8
-// 1 0 1 0 1 0 1 0
-// 0 0 0 0 0 0 0 0
-// 1 0 1 0 1 0 1 0
-// 0 0 0 0 0 0 0 0
-// 1 0 1 0 1 0 1 0
-// 0 0 0 0 0 0 0 0
-// 1 0 1 0 1 0 1 0
-// 0 0 0 0 0 0 0 0
-// 0 0`.split('\n')
-
-let input = `4 6
-110110
-110110
-111111
-111101`.split('\n')
+let input = `1
+10
+1 1
+1 1`.split('\n')
 
 
 // const input = require('fs').readFileSync('/dev/stdin').toString().trim().split('\n');
-const [Y, X]= input.shift().split(' ').map(Number);
-const arr = input.splice(0, Y).map(el => el.split('').map(Number));
-const check = Array.from({length: Y}, () => Array(X).fill(0));
+const N = +input.shift();
 
-const bfs = (x, y) => {
+const bfs = (x, y, EndX, EndY, arr, L) => {
   const queue = [{qx: x, qy: y}];
-  check[y][x] = 1;
-  const dx = [-1, 0, 1, 0];
-  const dy = [0, 1, 0, -1];
-  
-  while (queue.length) {
-    let { qx, qy } = queue.shift();
-    for(let j = 0; j < 4; j++) {
+  arr[y][x] = 1;
+  const dx = [-2, -1, 1, 2, 2, 1, -1, -2];
+  const dy = [1, 2, 2, 1, -1, -2, -2, 1];
+  let idx = 0
+  while (queue.length != idx) {
+    let { qx, qy } = queue[idx];
+    for(let j = 0; j < 8; j++) {
       let nx = qx + dx[j];
       let ny = qy + dy[j];
       if(
         nx >= 0 &&
         ny >= 0 &&
-        nx < X &&
-        ny < Y 
+        nx < L &&
+        ny < L 
       ) {
-        if(arr[ny][nx] === 1 && !check[ny][nx]) {
-          check[ny][nx] = check[qy][qx] + 1
-          queue.push({qx: nx, qy: ny});
-        }
+        if(arr[ny][nx] === 0) {
+          arr[ny][nx] = arr[qy][qx] + 1;
+          if(idx !== 0 && ny === EndY && nx === EndX) {
+            break;
+          } else {
+            queue.push({qx: nx, qy: ny});
+          }
+        } 
       }
     }
+    idx++
   }
+  console.log(arr[EndY][EndX] - 1)
 };
 
-bfs(0, 0)
-
-console.log(check[Y - 1][X - 1]);
+while(input.length) {
+  const L = +input.shift();
+  const arr =  Array.from(Array(L), () => Array(L).fill(0));
+  const [StartX, StartY] = input.shift().split(' ').map(Number);
+  const [EndX, EndY] = input.shift().split(' ').map(Number);
+  bfs(StartX, StartY, EndX, EndY, arr, L)
+}
